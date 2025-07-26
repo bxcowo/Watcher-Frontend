@@ -1,0 +1,26 @@
+<!-- Cabecera principal de la aplicación -->
+<header class="header">
+  <div class="header-container">
+    <!-- Logo y título del laboratorio -->
+    <div class="header-left">
+      <div class="logo-container">
+        <img src="OTI UNI.png" alt="OTI UNI Logo" class="logo">
+        <h1 class="title">Tech Lab</h1>
+      </div>
+    </div>
+    
+    <!-- Controles de autenticación -->
+    <div class="header-right">
+      @if (usuarioActual()) {
+        <!-- Usuario autenticado - mostrar información y logout -->
+        <div class="user-info">
+          <span class="user-name">{{ usuarioActual()!.nombres }} {{ usuarioActual()!.apellidos }}</span>
+          <button class="logout-button" (click)="cerrarSesion()">Cerrar Sesión</button>
+        </div>
+      } @else {
+        <!-- Usuario no autenticado - mostrar botón de login -->
+        <button class="login-button" (click)="abrirModalLogin()">Iniciar Sesión</button>
+      }
+    </div>
+  </div>
+</header>

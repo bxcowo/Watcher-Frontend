@@ -1,0 +1,109 @@
+<!-- Contenedor principal de la tabla de equipos -->
+<div class="table-container">
+  <!-- Cabecera de la tabla con información -->
+  <div class="table-header">
+    <h2 class="table-title">Inventario de Equipos</h2>
+    <div class="table-info">
+      <span class="total-items">Total: {{ equiposFiltrados().length }} equipos</span>
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  @if (cargandoDatos()) {
+    <div class="loading-container">
+      <p>Cargando equipos...</p>
+    </div>
+  }
+
+  <!-- Mensaje de error -->
+  @if (mensajeError()) {
+    <div class="error-container">
+      <p class="error-message">{{ mensajeError() }}</p>
+      <button (click)="cargarEquipos()" class="retry-button">Reintentar</button>
+    </div>
+  }
+
+  <!-- Tabla de equipos -->
+  @if (!cargandoDatos() && !mensajeError()) {
+    <div class="table-wrapper">
+      <table class="instruments-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th>Categoría</th>
+            <th>Marca</th>
+            <th>Descripción</th>
+            <th>Especificaciones</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (instrument of equiposFiltrados(); track instrument.idEquipo) {
+            <tr class="table-row">
+              <td class="name-cell">
+                <div class="instrument-name">{{ instrument.nombre }}</div>
+                <div class="instrument-model">{{ instrument.marca }}</div>
+              </td>
+              <td class="status-cell">
+                <span class="status-badge" [class]="obtenerClaseEstado(instrument.estado)">
+                  {{ obtenerEtiquetaEstado(instrument.estado) }}
+                </span>
+              </td>
+              <td class="category-cell">{{ instrument.categoria }}</td>
+              <td class="manufacturer-cell">{{ instrument.marca }}</td>
+              <td class="date-cell">{{ instrument.descripcion }}</td>
+              <td class="specs-cell">
+                <button 
+                  class="specs-button"
+                  (click)="onMostrarEspecificaciones(instrument)"
+                  title="Ver especificaciones"
+                >
+                  📋
+                </button>
+              </td>
+              <td class="actions-cell">
+                @if (equipoEnUso(instrument)) {
+                  <!-- Equipo en uso - acciones bloqueadas -->
+                  <div class="equipment-in-use">
+                    <span class="in-use-message" title="Equipo en uso - No se puede cambiar estado">
+                      🚫 En uso
+                    </span>
+                  </div>
+                } @else if (estaAutenticado()) {
+                  <!-- Usuario autenticado - puede cambiar estados -->
+                  <select 
+                    class="status-select"
+                    [value]="normalizarEstadoParaSelect(instrument.estado)"
+                    (change)="onCambiarEstado(instrument, $event)"
+                  >
+                    @for (estado of estadosDisponiblesSelect; track estado.valor) {
+                      <option [value]="estado.valor">{{ estado.etiqueta }}</option>
+                    }
+                  </select>
+                } @else {
+                  <!-- Usuario no autenticado - mostrar mensaje -->
+                  <div class="auth-required">
+                    <button 
+                      class="login-required-btn"
+                      (click)="solicitarLogin.emit()"
+                      title="Inicia sesión para cambiar estados"
+                    >
+                      🔒 Iniciar Sesión
+                    </button>
+                  </div>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-message">
+                No se encontraron equipos con los criterios seleccionados
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

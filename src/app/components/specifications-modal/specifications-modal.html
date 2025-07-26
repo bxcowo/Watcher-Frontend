@@ -1,0 +1,103 @@
+<!-- Modal de especificaciones técnicas -->
+@if (esVisible() && equipoSeleccionado()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- Cabecera del modal -->
+      <div class="modal-header">
+        <div class="instrument-info">
+          <h2 class="modal-title">{{ equipoSeleccionado()!.nombre }}</h2>
+          <p class="instrument-id">ID: {{ equipoSeleccionado()!.idEquipo }}</p>
+        </div>
+        <button class="close-button" (click)="cerrarModal()">×</button>
+      </div>
+      
+      <!-- Cuerpo del modal -->
+      <div class="modal-body">
+        <!-- Información básica del equipo (solo datos clave) -->
+        <div class="basic-info">
+          @for (info of informacionCabecera(); track info.campo) {
+            <div class="info-row">
+              <span class="info-label">{{ info.campo }}:</span>
+              <span class="info-value">
+                @if (info.esEstado) {
+                  <span class="status-badge" [class]="obtenerClaseEstado(equipoSeleccionado()!.estado)">
+                    {{ info.valor }}
+                  </span>
+                } @else {
+                  <span [class]="info.campo === 'Categoría' || info.campo === 'Marca' ? 'text-capitalize' : ''">
+                    {{ info.valor }}
+                  </span>
+                }
+              </span>
+            </div>
+          }
+        </div>
+        
+        <!-- Descripción del equipo -->
+        <div class="description-section">
+          <h4 class="desc-title">Descripción</h4>
+          <p class="desc-text">{{ equipoSeleccionado()!.descripcion }}</p>
+        </div>
+        
+        <div class="specifications">
+          
+          <!-- Especificaciones técnicas -->
+          <div class="technical-specs">
+            <h4 class="specs-title">Especificaciones Técnicas</h4>
+            
+            @if (cargandoEspecificaciones()) {
+              <div class="loading-specs">
+                <p>Cargando especificaciones técnicas...</p>
+              </div>
+            }
+            
+            @if (errorEspecificaciones()) {
+              <div class="error-specs">
+                <p class="error-message">{{ errorEspecificaciones() }}</p>
+                <button (click)="cargarEspecificaciones()" class="retry-button">
+                  Reintentar
+                </button>
+              </div>
+            }
+            
+            @if (especificaciones() && !cargandoEspecificaciones()) {
+              <div class="specs-grid">
+                @for (spec of obtenerEspecificacionesFormateadas(); track spec.campo) {
+                  <div class="spec-item">
+                    <div class="spec-label">{{ spec.campo }}</div>
+                    <div class="spec-value">
+                      @if (spec.esEnlace) {
+                        <button 
+                          class="link-button"
+                          (click)="abrirEnlace(spec.valor.toString())"
+                          title="Abrir enlace en nueva pestaña"
+                        >
+                          🔗 {{ spec.valor }}
+                        </button>
+                      } @else {
+                        {{ spec.valor }}
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            
+            @if (!especificaciones() && !cargandoEspecificaciones() && !errorEspecificaciones()) {
+              <div class="no-specs">
+                <p>No hay especificaciones técnicas disponibles para este equipo.</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <!-- Pie del modal -->
+      <div class="modal-footer">
+        <button class="close-footer-button" (click)="cerrarModal()">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+}

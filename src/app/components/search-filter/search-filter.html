@@ -1,0 +1,73 @@
+<!-- Contenedor de búsqueda y filtros -->
+<div class="search-filter-container">
+  <h2 class="section-title">Buscar y Filtrar Equipos</h2>
+  
+  <!-- Sección de búsqueda -->
+  <div class="search-section">
+    <div class="search-input-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por nombre, descripción, marca..."
+        [value]="terminoBusqueda()"
+        (input)="actualizarTerminoBusqueda($any($event.target).value)"
+      >
+      <div class="search-icon">🔍</div>
+    </div>
+  </div>
+
+  <!-- Sección de filtros específicos -->
+  <div class="filters-section">
+    <!-- Filtro por estado -->
+    <div class="filter-group">
+      <label class="filter-label">Estado</label>
+      <select 
+        class="filter-select" 
+        [value]="filtros().estado || ''"
+        (change)="actualizarFiltroEstado($any($event.target).value)"
+      >
+        <option value="">Todos los estados</option>
+        @for (estado of estadosDisponibles(); track estado.valor) {
+          <option [value]="estado.valor">{{ estado.etiqueta }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filtro por categoría -->
+    <div class="filter-group">
+      <label class="filter-label">Categoría</label>
+      <select 
+        class="filter-select" 
+        [value]="filtros().categoria || ''"
+        (change)="actualizarFiltroCategoria($any($event.target).value)"
+      >
+        <option value="">Todas las categorías</option>
+        @for (categoria of categoriasDisponibles(); track categoria) {
+          <option [value]="categoria">{{ categoria }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Filtro por marca -->
+    <div class="filter-group">
+      <label class="filter-label">Marca</label>
+      <select 
+        class="filter-select" 
+        [value]="filtros().marca || ''"
+        (change)="actualizarFiltroMarca($any($event.target).value)"
+      >
+        <option value="">Todas las marcas</option>
+        @for (marca of marcasDisponibles(); track marca) {
+          <option [value]="marca">{{ marca }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Acciones de filtros -->
+    <div class="filter-actions">
+      <button class="clear-filters-btn" (click)="limpiarFiltros()">
+        Limpiar Filtros
+      </button>
+    </div>
+  </div>
+</div>

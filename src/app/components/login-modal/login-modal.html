@@ -1,0 +1,67 @@
+<!-- Modal de autenticación -->
+@if (esVisible()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <!-- Cabecera del modal -->
+      <div class="modal-header">
+        <h2 class="modal-title">Iniciar Sesión</h2>
+        <button class="close-button" (click)="cerrarModal()">×</button>
+      </div>
+      
+      <!-- Formulario de login -->
+      <form class="login-form" (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <!-- Campo de correo electrónico -->
+        <div class="form-group">
+          <label for="correo" class="form-label">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="correo" 
+            name="correo"
+            class="form-input"
+            [value]="credenciales().correo"
+            (input)="actualizarCorreo($any($event.target).value)"
+            required
+            placeholder="ejemplo@uni.edu.pe"
+            [disabled]="autenticando()"
+          >
+        </div>
+        
+        <!-- Campo de contraseña -->
+        <div class="form-group">
+          <label for="password" class="form-label">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password"
+            class="form-input"
+            [value]="credenciales().password"
+            (input)="actualizarPassword($any($event.target).value)"
+            required
+            placeholder="Ingrese su contraseña"
+            [disabled]="autenticando()"
+          >
+        </div>
+        
+        <!-- Mensaje de error -->
+        @if (mensajeError()) {
+          <div class="error-message">
+            {{ mensajeError() }}
+          </div>
+        }
+        
+        <!-- Botón de envío -->
+        <button 
+          type="submit" 
+          class="login-submit-button"
+          [disabled]="!loginForm.valid || autenticando()"
+        >
+          @if (autenticando()) {
+            Autenticando...
+          } @else {
+            Iniciar Sesión
+          }
+        </button>
+      </form>
+    </div>
+  </div>
+}
